@@ -22,6 +22,7 @@ async def semantic_search(
             raise HTTPException(status_code=401, detail="Invalid token or missing user ID.")
         vector_query=await generate_embedding(query)
         query_type=await classify_query_type(query)
+        print(query_type)
         result=await vector_search(user_id,vector_query,query_type,limit)
 
         return {

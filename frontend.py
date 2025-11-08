@@ -1,15 +1,10 @@
 import streamlit as st
 import requests
 import mimetypes
-
-# --- 1. Configuration ---
-# Set your FastAPI backend URL
 BASE_URL = "http://localhost:8000"
 
 st.set_page_config(page_title="Synapse Brain", layout="wide")
 
-
-# --- 2. API Helper Functions ---
 
 def api_signup(name, email, password):
     """Call the /signup API"""
@@ -65,23 +60,16 @@ def api_search_data(token, query, limit):
     except Exception as e:
         return None, f"An unexpected error occurred: {e}"
 
-# --- 3. Initialize Session State ---
-# This is crucial for keeping the user logged in
-
 if "token" not in st.session_state:
     st.session_state.token = None
     st.session_state.user_email = None
     st.session_state.user_id = None
 
-# --- 4. Authentication UI (Login/Signup Page) ---
-
 if st.session_state.token is None:
-    st.title("Welcome to Synapse Brain 🧠")
+    st.title("Welcome to Synapse Brain")
     st.markdown("Please log in or register to continue.")
 
     login_tab, signup_tab = st.tabs(["Login", "Sign Up"])
-
-    # --- Login Form ---
     with login_tab:
         with st.form("login_form"):
             email = st.text_input("Email")
@@ -139,8 +127,8 @@ else:
     if page == "Add Data":
         st.header("Add to your Synapse Brain 🧠")
         
-        add_text, add_url, add_image, add_linkedin = st.tabs([
-            "📝 Add Text", "🔗 Add URL", "🖼️ Add Image", "👔 Add LinkedIn Job"
+        add_text, add_url, add_image = st.tabs([
+            "📝 Add Text", "🔗 Add URL", "🖼️ Add Image"
         ])
 
         # --- Add Text Form ---
@@ -156,7 +144,7 @@ else:
                         st.error(error)
                     else:
                         st.success(res.get("status", "Successfully added text!"))
-                        st.json(res) # Show the full response
+                        st.json(res) 
 
         # --- Add URL Form ---
         with add_url:
@@ -190,23 +178,7 @@ else:
                     else:
                         st.success(res.get("status", "Successfully added image!"))
                         st.json(res)
-        
-        # --- Add LinkedIn Job Form ---
-        with add_linkedin:
-            with st.form("linkedin_form", clear_on_submit=True):
-                linkedin_url = st.text_input("Enter the LinkedIn Job URL:")
-                submit_linkedin = st.form_submit_button("Save Job")
-
-                if submit_linkedin and linkedin_url:
-                    data_payload = {"data_type": "linkedin_job", "url": linkedin_url}
-                    res, error = api_add_data(st.session_state.token, data_payload)
-                    if error:
-                        st.error(error)
-                    else:
-                        st.success(res.get("status", "Successfully added LinkedIn Job!"))
-                        st.json(res)
-
-    # --- "Search Data" Page ---
+    
     elif page == "Search Data":
         st.header("Search your Synapse Brain 🔍")
 
@@ -224,8 +196,6 @@ else:
                     else:
                         st.success(f"Found {results.get('results_found', 0)} results for '{results.get('query')}'")
                         st.divider()
-                        
-                        # --- Display Results ---
                         if not results.get("results"):
                             st.info("No matching data found.")
                         

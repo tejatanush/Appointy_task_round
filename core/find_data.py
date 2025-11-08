@@ -15,18 +15,21 @@ data_col = db["data"]
 
 # --- 1️⃣ CLASSIFY USER QUERY TYPE ---
 async def classify_query_type(query: str) -> str:
-    # ... (this function is correct, no change needed)
     try:
         prompt = f"""
-        You are a smart query classifier. Categorize this user query into one of these:
-        - text
-        - image
-        - url
-        If uncertain or it mixes multiple types, return "all".
-        
-        Query: "{query}"
-        Just return the type name only.
-        """
+**Role:** You are an expert zero-shot classifier.
+**Task:** Classify the user's query into *one* of the following categories:
+- `text` (Queries about notes, documents, or general text. e.g., "my note on system design")
+- `image` (Queries about photos, pictures, or screenshots. e.g., "show me that photo of a whiteboard")
+- `url` (Queries about websites, links, or articles. e.g., "find the article I saved on Python")
+- `all` (Queries that are general, ambiguous, or mix multiple types. e.g., "find my stuff", "search everything")
+
+**Rules:**
+1.  Respond with *only* the single category name (`text`, `image`, `url`, `linkedin_job`, or `all`).
+2.  Do not add explanations, punctuation, markdown, or any other text.
+3.  If uncertain, always default to `all`.
+**Query:** "{query}"
+"""
         res = await ai_client.chat.completions.create(
             model="gpt-4o-mini",
             messages=[{"role": "user", "content": prompt}],
@@ -94,9 +97,6 @@ async def _local_cosine_search(user_id: str, query_vector: list, mongo_filter: d
         print(f"🚨 Local cosine search *itself* failed: {e}")
         # Raise error from here to be caught by the main endpoint
         raise HTTPException(status_code=500, detail=f"Local cosine search failed: {e}")
-
-
-# --- 3️⃣ UPDATE YOUR 'vector_search' FUNCTION ---
 async def vector_search(user_id: str, query_vector: list, query_type: str, limit: int = 5):
     """
     Performs a vector search. Tries Atlas $vectorSearch first,
@@ -107,7 +107,6 @@ async def vector_search(user_id: str, query_vector: list, query_type: str, limit
         mongo_filter["type"] = query_type
 
     try:
-        # --- 1. Attempt Atlas Vector Search ---
         results = await data_col.aggregate([
             {
                 "$vectorSearch": {
@@ -121,21 +120,15 @@ async def vector_search(user_id: str, query_vector: list, query_type: str, limit
             },
             {
                 "$project": {
-                    "_id": 0, "score": {"$meta": "vectorSearchScore"},
-                    "title": 1, "summary": 1, "tags": 1, "category": 1,
+                    "_id": 0,
+                    "title": 1, "summary": 1,
                     "type": 1, "source_platform": 1, "media_url": 1, "created_at": 1
                 }
             }
         ]).to_list(length=limit)
-        
-        # If Atlas search works (even if 0 results), we are done.
         print("✅ Atlas vector search successful.")
         return results
 
     except Exception as e:
-        # --- 2. Fallback to Local Search ---
-        # This block runs if $vectorSearch fails (e.g., on a local DB)
         print(f"⚠️ Atlas vector search failed: {e}. Falling back to local similarity.")
-        
-        # Now, we *actually* call the fallback function
         return await _local_cosine_search(user_id, query_vector, mongo_filter, limit)
