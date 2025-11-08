@@ -91,23 +91,11 @@ This project was built to solve several key challenges in creating a "second bra
 
 ### 2. Installation
 
-1.  **Clone the repository:**
-    ```bash
-    git clone [YOUR_REPOSITORY_URL]
-    cd [YOUR_PROJECT_DIRECTORY]
-    ```
-
-2.  **Create and activate a virtual environment:**
-    ```bash
-    python -m venv venv
-    source venv/bin/activate  # On Windows: venv\Scripts\activate
-    ```
-
-3.  **Install dependencies from `requirements.txt`:**
+**Install dependencies from `requirements.txt`:**
     ```bash
     pip install -r requirements.txt
     ```
-    *(Create a `requirements.txt` file with: `fastapi`, `uvicorn[standard]`, `motor`, `openai`, `newspaper3k`, `passlib[bcrypt]`, `python-jose[cryptography]`, `pillow`, `numpy`, `python-multipart`, `beautifulsoup4`, `requests`)*
+    
 
 ### 3. Environment Variables
 
