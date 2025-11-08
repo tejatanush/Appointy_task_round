@@ -1,0 +1,45 @@
+# --- Environment files ---
+.env
+*.env
+venv/
+env/
+.venv/
+ENV/
+env.bak/
+venv.bak/
+
+# --- Python cache ---
+__pycache__/
+*.py[cod]
+*$py.class
+
+# --- IDE / Editor folders ---
+.vscode/
+.idea/
+*.swp
+
+# --- OS / System files ---
+.DS_Store
+Thumbs.db
+
+# --- Logs and database files ---
+*.log
+*.sqlite3
+
+# --- Jupyter Notebook checkpoints ---
+.ipynb_checkpoints
+
+# --- Distribution / build folders ---
+build/
+dist/
+*.egg-info/
+
+# --- Coverage and test ---
+htmlcov/
+.tox/
+.coverage
+.pytest_cache/
+nosetests.xml
+
+# --- Miscellaneous ---
+*.bak
