@@ -37,7 +37,7 @@ async def login_user(email: str, password: str):
         raise HTTPException(status_code=500, detail="Corrupted user record: missing email")
 
     payload = {
-        "sub": str(user["_id"]),
+        "uid": str(user["_id"]),
         "email": user["email"],
         "exp": datetime.now(timezone.utc) + timedelta(minutes=ACCESS_TOKEN_EXPIRE_MINUTES),
         "iat": datetime.now(timezone.utc)

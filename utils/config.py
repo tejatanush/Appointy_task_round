@@ -17,3 +17,8 @@ def get_JWT_settings():
     secrete_key2=os.getenv("SECRET_KEY")
     time_in_min=int(os.getenv("ACCESS_TOKEN_EXPIRE_MINUTES"))
     return algo,secrete_key2,time_in_min
+
+def get_scraper():
+    load_dotenv()
+    scraper_api_key=os.getenv("SCRAPER_API_KEY")
+    return scraper_api_key
